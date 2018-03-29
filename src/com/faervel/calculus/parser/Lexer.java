@@ -5,41 +5,67 @@ import java.util.List;
 
 public final class Lexer {
 
-    private static final String OPERATOR_CHARS = "+-*/";
+    private static final String OPERATOR_CHARS = "+-*/()";
     private static final TokenType[] OPERATOR_TOKENS = {
-        TokenType.PLUS, TokenType.MINUS,
-        TokenType.STAR, TokenType.SLASH,
+            TokenType.PLUS, TokenType.MINUS,
+            TokenType.STAR, TokenType.SLASH,
+            TokenType.LPAREN, TokenType.RPAREN,
     };
-    private String input;
-    private List<Token> tokens;
-    private int lenght;
+
+    private final String input;
+    private final int length;
+
+    private final List<Token> tokens;
+
     private int pos;
 
     public Lexer(String input) {
         this.input = input;
-        lenght = input.length();
+        length = input.length();
 
         tokens = new ArrayList<>();
     }
 
     public List<Token> tokenize() {
-        while ( pos < lenght) {
+        while (pos < length) {
             final char current = peek(0);
             if (Character.isDigit(current)) tokenizeNumber();
-            else if (OPERATOR_CHARS.indexOf(current) != -1) tokenizeOperator();
-            else next();
+            else if (current == '#') {
+                next();
+                tokenizeHexNumber();
+            }
+            else if (OPERATOR_CHARS.indexOf(current) != -1) {
+                tokenizeOperator();
+            } else {
+                // whitespaces
+                next();
+            }
         }
         return tokens;
     }
 
     private void tokenizeNumber() {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         char current = peek(0);
         while (Character.isDigit(current)) {
             buffer.append(current);
             current = next();
         }
         addToken(TokenType.NUMBER, buffer.toString());
+    }
+
+    private void tokenizeHexNumber() {
+        final StringBuilder buffer = new StringBuilder();
+        char current = peek(0);
+        while (Character.isDigit(current) || isHexNumber(current)) {
+            buffer.append(current);
+            current = next();
+        }
+        addToken(TokenType.HEX_NUMBER, buffer.toString());
+    }
+
+    private static boolean isHexNumber(char current) {
+        return "abcdef".indexOf(Character.toLowerCase(current)) != -1;
     }
 
     private void tokenizeOperator() {
@@ -55,7 +81,7 @@ public final class Lexer {
 
     private char peek(int relativePosition) {
         final int position = pos + relativePosition;
-        if (position >= lenght) return '\0';
+        if (position >= length) return '\0';
         return input.charAt(position);
     }
 

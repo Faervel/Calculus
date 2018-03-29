@@ -3,14 +3,15 @@ package com.faervel.calculus.parser;
 public final class Token {
 
     private TokenType type;
-    private String text; // ""
+    private String text;
+
+    public Token() {
+    }
 
     public Token(TokenType type, String text) {
         this.type = type;
         this.text = text;
     }
-
-    public Token() {}
 
     public TokenType getType() {
         return type;
