@@ -1,9 +1,6 @@
 package com.faervel.calculus.parser;
 
-import com.faervel.calculus.parser.ast.BinaryExpression;
-import com.faervel.calculus.parser.ast.Expression;
-import com.faervel.calculus.parser.ast.NumberExpression;
-import com.faervel.calculus.parser.ast.UnaryExpression;
+import com.faervel.calculus.parser.ast.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +85,9 @@ public class Parser {
         }
         if (match(TokenType.HEX_NUMBER)) {
             return new NumberExpression(Long.parseLong(current.getText(), 16));
+        }
+        if (match(TokenType.WORD)) {
+            return new ConstantExpression(current.getText());
         }
         if (match(TokenType.LPAREN)) {
             Expression result = expression();

@@ -9,8 +9,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String args[]) {
-        final String input = "3 + 2 * 2";
-        final String input2 = "(7 + 7) * #f";
+        final String input = "3 + 2 * 2  * #f";
+        final String input2 = "PI + 1";
         final List<Token> tokens = new Lexer(input2).tokenize();
         for (Token token : tokens) {
             System.out.println(token);
