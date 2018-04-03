@@ -1,7 +1,10 @@
 package com.faervel.calculus.parser.ast;
 
-public class BinaryExpression implements Expression{
+import com.faervel.calculus.lib.NumberValue;
+import com.faervel.calculus.lib.StringValue;
+import com.faervel.calculus.lib.Value;
 
+public final class BinaryExpression implements Expression {
 
     private final Expression expr1, expr2;
     private final char operation;
@@ -13,14 +16,35 @@ public class BinaryExpression implements Expression{
     }
 
     @Override
-    public double eval() {
+    public Value eval() {
+        final Value value1 = expr1.eval();
+        final Value value2 = expr2.eval();
+        if (value1 instanceof StringValue) {
+            final String string1 = value1.asString();
+            switch (operation) {
+                case '*': {
+                    final int iterations = (int) value2.asNumber();
+                    final StringBuilder buffer = new StringBuilder();
+                    for (int i = 0; i < iterations; i++) {
+                        buffer.append(string1);
+                    }
+                    return new StringValue(buffer.toString());
+                }
+                case '+':
+                default:
+                    return new StringValue(string1 + value2.asString());
+            }
+        }
+
+        final double number1 = value1.asNumber();
+        final double number2 = value2.asNumber();
         switch (operation) {
-            case '-': return expr1.eval() - expr2.eval();
-            case '*': return expr1.eval() * expr2.eval();
-            case '/': return expr1.eval() / expr2.eval();
+            case '-': return new NumberValue(number1 - number2);
+            case '*': return new NumberValue(number1 * number2);
+            case '/': return new NumberValue(number1 / number2);
             case '+':
             default:
-                return expr1.eval() + expr2.eval();
+                return new NumberValue(number1 + number2);
         }
     }
 
