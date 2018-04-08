@@ -31,6 +31,9 @@ public final class Parser {
         if (match(TokenType.PRINT)) {
             return new PrintStatement(expression());
         }
+        if (match(TokenType.IF)) {
+            return ifElse();
+        }
         return assignmentStatement();
     }
 
@@ -45,10 +48,43 @@ public final class Parser {
         throw new RuntimeException("Unknown statement");
     }
 
+    private Statement ifElse() {
+        final Expression condition = expression();
+        final Statement ifStatement = statement();
+        final Statement elseStatement;
+        if (match(TokenType.ELSE)) {
+            elseStatement = statement();
+        } else {
+            elseStatement = null;
+        }
+        return new IfStatement(condition, ifStatement, elseStatement);
+    }
 
 
     private Expression expression() {
-        return additive();
+        return conditional();
+    }
+
+    private Expression conditional() {
+        Expression result = additive();
+
+        while (true) {
+            if (match(TokenType.EQ)) {
+                result = new ConditionalExpression('=', result, additive());
+                continue;
+            }
+            if (match(TokenType.LT)) {
+                result = new ConditionalExpression('<', result, additive());
+                continue;
+            }
+            if (match(TokenType.GT)) {
+                result = new ConditionalExpression('>', result, additive());
+                continue;
+            }
+            break;
+        }
+
+        return result;
     }
 
     private Expression additive() {

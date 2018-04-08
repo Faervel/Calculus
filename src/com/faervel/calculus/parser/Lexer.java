@@ -5,12 +5,12 @@ import java.util.List;
 
 public final class Lexer {
 
-    private static final String OPERATOR_CHARS = "+-*/()=";
+    private static final String OPERATOR_CHARS = "+-*/()=<>";
     private static final TokenType[] OPERATOR_TOKENS = {
             TokenType.PLUS, TokenType.MINUS,
             TokenType.STAR, TokenType.SLASH,
             TokenType.LPAREN, TokenType.RPAREN,
-            TokenType.EQ
+            TokenType.EQ, TokenType.LT, TokenType.GT
     };
 
     private final String input;
@@ -36,7 +36,8 @@ public final class Lexer {
             else if (current == '#') {
                 next();
                 tokenizeHexNumber();
-            } else if (OPERATOR_CHARS.indexOf(current) != -1) {
+            }
+            else if (OPERATOR_CHARS.indexOf(current) != -1) {
                 tokenizeOperator();
             } else {
                 // whitespaces
@@ -85,7 +86,7 @@ public final class Lexer {
         final StringBuilder buffer = new StringBuilder();
         char current = peek(0);
         while (true) {
-            if (!Character.isLetterOrDigit(current) && (current != '_') && (current != '$')) {
+            if (!Character.isLetterOrDigit(current) && (current != '_')  && (current != '$')) {
                 break;
             }
             buffer.append(current);
@@ -93,10 +94,13 @@ public final class Lexer {
         }
 
         final String word = buffer.toString();
-        if (word.equals("print")) {
-            addToken(TokenType.PRINT);
-        } else {
-            addToken(TokenType.WORD, word);
+        switch (word) {
+            case "print": addToken(TokenType.PRINT); break;
+            case "if": addToken(TokenType.IF); break;
+            case "else": addToken(TokenType.ELSE); break;
+            default:
+                addToken(TokenType.WORD, word);
+                break;
         }
     }
 
@@ -108,18 +112,9 @@ public final class Lexer {
             if (current == '\\') {
                 current = next();
                 switch (current) {
-                    case '"':
-                        current = next();
-                        buffer.append('"');
-                        continue;
-                    case 'n':
-                        current = next();
-                        buffer.append('\n');
-                        continue;
-                    case 't':
-                        current = next();
-                        buffer.append('\t');
-                        continue;
+                    case '"': current = next(); buffer.append('"'); continue;
+                    case 'n': current = next(); buffer.append('\n'); continue;
+                    case 't': current = next(); buffer.append('\t'); continue;
                 }
                 buffer.append('\\');
                 continue;

@@ -1,3 +1,1 @@
-var1 = 2 + 2
-var2 = PI + var1
-print var2 + " nya"
+if 1 = 1 print "Hi!"

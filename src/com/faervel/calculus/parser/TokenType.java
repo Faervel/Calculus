@@ -7,14 +7,18 @@ public enum TokenType {
     WORD,
     TEXT,
 
-    // keywords
+    // keyword
     PRINT,
+    IF,
+    ELSE,
 
     PLUS,
     MINUS,
     STAR,
     SLASH,
     EQ,
+    LT,
+    GT,
 
     LPAREN,
     RPAREN,
