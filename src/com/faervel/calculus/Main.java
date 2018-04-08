@@ -10,7 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class Main {
+public final class Main {
+
     public static void main(String[] args) throws IOException {
         final String input = new String( Files.readAllBytes(Paths.get("prog.txt")), "UTF-8");
         final List<Token> tokens = new Lexer(input).tokenize();
@@ -18,12 +19,8 @@ public class Main {
             System.out.println(token);
         }
 
-        final List<Statement> statements = new Parser(tokens).parse();
-//        for (Statement statement : statements) {
-//            System.out.println(statement);
-//        }
-        for (Statement statement : statements) {
-            statement.execute();
-        }
+        final Statement program = (Statement) new Parser(tokens).parse();
+        System.out.println(program.toString());
+        program.execute();
     }
 }
